@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+      "lib": [
+        "dom",
+        "es5",
+        "es2015.promise"
+      ],
+      "target": "es5",
+      "sourceMap": true,
+      "outDir": "./dist/",
+      "module": "commonjs",
+      "noImplicitAny": true,
+      "experimentalDecorators": true,
+      "allowSyntheticDefaultImports": true
+    },
+    "exclude": [
+      "dist",
+      "node_modules"
+    ],
+    "include": [
+      "./src/**/*.ts"
+    ]
+  }

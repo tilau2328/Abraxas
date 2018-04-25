@@ -21,8 +21,8 @@ export class UsersController {
 
   @Get()
   @UseGuards(AuthGuard)
-  async self(@Res() res) {
-    return res.status(HttpStatus.OK).json({ user: res.user });
+  async self(@Req() req, @Res() res) {
+    return res.status(HttpStatus.OK).json({ user: req.user });
   }
 
   @Get(':id')
