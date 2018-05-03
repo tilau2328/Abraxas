@@ -1,4 +1,4 @@
-import {Middleware, NestMiddleware, HttpStatus, HttpException} from '@nestjs/common';
+import { Middleware, NestMiddleware, HttpStatus, HttpException } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { UserDto } from '../dto/user.dto';
 import * as jwt from 'jsonwebtoken';
@@ -11,10 +11,11 @@ export class AuthMiddleware implements NestMiddleware {
     return async (req, res, next) => {
       const token = req.headers["authentication"];
       try {
-        req.user = await this.authService.validateToken(token);
+        if(token)
+          req.user = await this.authService.validateToken(token);
         next();
       } catch(err) {
-        if(err.getStatus() < 500) return next();
+        if(parseInt(err.getStatus()) < 500) return next();
         res.status(err.getStatus()).send();
       }
     }
