@@ -9,6 +9,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
+                    <li class="nav-item" v-if="!!user">
+                        <router-link :to="{ name: 'Files' }" class="nav-link">Files</router-link>
+                    </li>
                 </ul>
                 <ul class="navbar-nav navbar-right">
                     <li class="nav-item" v-if="!!user">

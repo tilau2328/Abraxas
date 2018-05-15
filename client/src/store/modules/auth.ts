@@ -1,21 +1,22 @@
+import Axios from 'axios';
 import Vuex, { Module } from 'vuex'
 import { DefineActions, DefineGetters, DefineMutations } from "vuex-type-helper";
-import { State, Getters, Mutations, Actions } from '../../interfaces/auth';
+import { AuthState, Getters, Mutations, Actions } from '../../interfaces/auth';
 import { login, register, getSelf } from '../../connectors/auth';
-import Axios from 'axios';
+import { State } from '..';
 
-const state: State = {
+const state: AuthState = {
     user: undefined,
     pending: false,
 };
 
-const getters: DefineGetters<Getters, State> = {
+const getters: DefineGetters<Getters, AuthState> = {
     user: state => state.user,
     isLoggedIn: state => !!state.user,
     isLoggingIn: state => state.pending,
 };
 
-const mutations: DefineMutations<Mutations, State> = {
+const mutations: DefineMutations<Mutations, AuthState> = {
     setPending(state, pending) {
         state.pending = pending;
     },
@@ -24,7 +25,7 @@ const mutations: DefineMutations<Mutations, State> = {
     },
 };
 
-const actions: DefineActions<Actions, State, Mutations, Getters> = {
+const actions: DefineActions<Actions, AuthState, Mutations, Getters> = {
     async login({ commit , dispatch }, { username, password }) {
         commit('setPending', true);
         try {
@@ -70,7 +71,7 @@ const actions: DefineActions<Actions, State, Mutations, Getters> = {
     },
 };
 
-export const auth: Module<State, State> = {
+export const auth: Module<AuthState, State> = {
     namespaced: true,
     state: state,
     getters: getters,

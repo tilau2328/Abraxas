@@ -12,7 +12,7 @@ export interface RegisterCredentials {
     password: string;
 }
 
-export interface State {
+export interface AuthState {
     user?: User,
     pending: boolean, 
 }
