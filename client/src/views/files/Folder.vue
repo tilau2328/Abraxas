@@ -33,7 +33,6 @@
         },
         watch: {
             '$route' (to, from) {
-                console.log("To: ", to);
                 this.fetchFolder(to.params.id);
             }
         }
@@ -60,30 +59,16 @@
             return res;
         }
         
-        updated() {
-            const id = this.$store.state.route.params.id;
-            console.log("Updated");
-            if(!this.folder || id !== this.folder.id) {
-                console.log("Id: ", id);                
-                
-            }         
-        }
-
         created() {
-            const id = this.$store.state.route.params.id;
-            if(!this.folder || id !== this.folder.id) {
-                this.fetchFolder(id);
-            }     
+            const id = this.$store.state.route.params.id;              
+            this.fetchFolder(id);
         }
 
         back() {
             let route = {
                 name: !!this.folder.directory ? 'Folder' : 'Files',
-                params: {
-                    id: this.folder.directory
-                }
+                params: { id: this.folder.directory }
             };
-            console.log(route);
             this.$router.push(route);
         }
     }

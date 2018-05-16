@@ -2,90 +2,94 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { LoginCredentials, RegisterCredentials, User } from '../interfaces/auth';
 import { IFolder, IFile } from '../interfaces/files';
 
-const dataConfig: AxiosRequestConfig = {
-    baseURL: 'http://localhost:3000',
-};
+export class StorageConnector {
+    private config: AxiosRequestConfig = {
+        baseURL: 'http://localhost:5000/files',
+    };
 
-const storageConfig: AxiosRequestConfig = {
-    baseURL: 'http://localhost:5000/files',
-};
+    private instance: AxiosInstance = axios.create(this.config);
 
-const dataInstance: AxiosInstance = axios.create(dataConfig);
-const storageInstance: AxiosInstance = axios.create(storageConfig);
+    async upload(form: FormData): Promise<void> {
+        try {
+            await this.instance.post('', form);
+        } catch(err) {
+            console.log(err);
+        }
+    }
 
-export async function upload(form: FormData): Promise<void> {
-    try {
-        await storageInstance.post('', form);
-    } catch(err) {
-        console.log(err);
+    async download(id: string): Promise<Blob> {
+        try {
+            const res = await this.instance.get(`/${id}/download`, { responseType: 'blob' });
+            return res.data;
+        } catch(err) {
+            console.log(err);
+        }
     }
 }
 
-export async function download(id: string): Promise<any> {
-    try {
-        const res = await storageInstance.get(`/${id}/download`, { responseType: 'blob' });
-        return res.data;
-    } catch(err) {
-        console.log(err);
-    }
-}
+export class DataConnector {
+    private config: AxiosRequestConfig = {
+        baseURL: 'http://localhost:3000',
+    };
 
-export async function getFile(id: string): Promise<any> {
-    try {
-        const res = await dataInstance.get(`/files/${id}`);
-        return res.data;
-    } catch(err) {
-        console.log(err);
-    }
-}
+    private instance: AxiosInstance = axios.create(this.config);
 
-export async function updateFile(file: IFile): Promise<void> {
-    try {
-        await dataInstance.patch(`/files/${file.id}`, file);
-    } catch(err) {
-        console.log(err);
+    async getFile(id: string): Promise<any> {
+        try {
+            const res = await this.instance.get(`/files/${id}`);
+            return res.data;
+        } catch(err) {
+            console.log(err);
+        }
     }
-}
 
-export async function removeFile(id: string): Promise<void> {
-    try {
-        await dataInstance.delete(`/files/${id}`);
-    } catch(err) {
-        console.log(err);
+    async updateFile(file: IFile): Promise<void> {
+        try {
+            await this.instance.patch(`/files/${file.id}`, file);
+        } catch(err) {
+            console.log(err);
+        }
     }
-}
 
-export async function getFolder(id?: string): Promise<IFolder> {
-    try {
-        let url = '/folders';
-        if(id) url += `/${id}`;
-        const res = await dataInstance.get(url);
-        return res.data;
-    } catch(err) {
-        console.log(err);
+    async removeFile(id: string): Promise<void> {
+        try {
+            await this.instance.delete(`/files/${id}`);
+        } catch(err) {
+            console.log(err);
+        }
     }
-}
 
-export async function createFolder(folder: IFolder): Promise<void> {
-    try {
-        await dataInstance.post(`/folders`, folder);
-    } catch(err) {
-        console.log(err);
+    async getFolder(id?: string): Promise<IFolder> {
+        try {
+            let url = '/folders' + (!!id ? `/${id}` : '');
+            const res = await this.instance.get(url);
+            return res.data;
+        } catch(err) {
+            console.log(err);
+        }
     }
-}
 
-export async function updateFolder(folder: IFolder): Promise<void> {
-    try {
-        await dataInstance.patch(`/folders/${folder.id}`, folder);
-    } catch(err) {
-        console.log(err);
+    async createFolder(folder: IFolder): Promise<void> {
+        try {
+            await this.instance.post(`/folders`, folder);
+        } catch(err) {
+            console.log(err);
+        }
     }
-}
 
-export async function removeFolder(id: string): Promise<void> {
-    try {
-        await dataInstance.delete(`/folders/${id}`);
-    } catch(err) {
-        console.log(err);
+    async updateFolder(folder: IFolder): Promise<void> {
+        try {
+            await this.instance.patch(`/folders/${folder.id}`, folder);
+        } catch(err) {
+            console.log(err);
+        }
     }
+
+    async removeFolder(id: string): Promise<void> {
+        try {
+            await this.instance.delete(`/folders/${id}`);
+        } catch(err) {
+            console.log(err);
+        }
+    }    
 }

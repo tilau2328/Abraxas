@@ -2,8 +2,10 @@ import Axios from 'axios';
 import Vuex, { Module } from 'vuex'
 import { DefineActions, DefineGetters, DefineMutations } from "vuex-type-helper";
 import { AuthState, Getters, Mutations, Actions } from '../../interfaces/auth';
-import { login, register, getSelf } from '../../connectors/auth';
+import { AuthConnector } from '../../connectors/auth';
 import { State } from '..';
+
+const connector = new AuthConnector();
 
 const state: AuthState = {
     user: undefined,
@@ -29,7 +31,7 @@ const actions: DefineActions<Actions, AuthState, Mutations, Getters> = {
     async login({ commit , dispatch }, { username, password }) {
         commit('setPending', true);
         try {
-            const token = await login({ username, password });
+            const token = await connector.login({ username, password });
             if(!token) throw 'Error: Invalid Token';
             localStorage.setItem('token', token);
             return await dispatch("authenticate", {});
@@ -41,7 +43,7 @@ const actions: DefineActions<Actions, AuthState, Mutations, Getters> = {
     async register({ commit, dispatch }, { username, password }) {
         commit('setPending', true);
         try {
-            const token = await register({ username, password });
+            const token = await connector.register({ username, password });
             if(!token) throw 'Error: Invalid Token';
             localStorage.setItem('token', token);
             return await dispatch("authenticate", {});
@@ -56,7 +58,7 @@ const actions: DefineActions<Actions, AuthState, Mutations, Getters> = {
             const token = localStorage.getItem('token');
             if(!token) return false;
             Axios.defaults.headers.common['authentication'] = token;
-            const user = await getSelf();
+            const user = await connector.getSelf();
             if(user) commit('setUser', user);
             return !!user;
         } catch(err) {

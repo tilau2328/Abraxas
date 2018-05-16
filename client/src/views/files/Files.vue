@@ -26,10 +26,15 @@
             FolderList,
             UploadForm,
             FolderOptions,
+        },
+        watch: {
+            '$route' (to, from) {
+                this.fetchFolder();
+            }
         }
     })
     export default class Files extends Vue {
-        @Action('files/fetchFolder') fetchFolder: (id?: string) => Promise<void>;
+        @Action('files/fetchFolder') fetchFolder: () => Promise<void>;
         @Getter('files/currentFolder') folder: IFolder;
         private socket: SocketIOClient.Socket;
         private events: Observable<any>;
@@ -50,17 +55,8 @@
             return res;
         }
 
-        updated() {
-            const id = this.$store.state.route.params.id;
-            if(!this.folder || !!this.folder.id) {
-                this.fetchFolder();
-            }         
-        }
-
         created() {
-            if(!this.folder || !!this.folder.id) {
-                this.fetchFolder();
-            }     
+            this.fetchFolder();
         }
     }
 </script>
