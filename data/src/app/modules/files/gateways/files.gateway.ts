@@ -22,12 +22,8 @@ export class FilesGateway implements OnGatewayInit {
         this.pubsub = createClient();
         this.pubsub.subscribe("files");
         this.pubsub.on('message', (channel, message) => {
-            try {
-                console.log("Message");
-                this.events.next(JSON.parse(message)); 
-            } catch(err) {
-                console.log("Err: ", err);
-            }
+            try { this.events.next(JSON.parse(message)); } 
+            catch(err) { console.log("Err: ", err); }
         });
     }
 

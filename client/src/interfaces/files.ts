@@ -7,6 +7,7 @@ export interface IItem {
 export interface IFile extends IItem {
     title: string;
     mimetype?: string;
+    extension?: string;
 }
 
 export interface IFolder extends IItem {

@@ -3,5 +3,6 @@ export class FileDto {
     readonly owner: string;
     readonly title: string;
     readonly mimetype: string;
-    readonly directory: string;
+    readonly directory?: string;
+    readonly extension?: string;
 }

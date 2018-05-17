@@ -4,4 +4,5 @@ export class FileDto {
     readonly title: string;
     readonly mimetype: string;
     readonly directory: string;
+    readonly extension: string;
 }

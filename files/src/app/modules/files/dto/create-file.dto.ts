@@ -1,5 +1,5 @@
 export class CreateFileDto {
     readonly path: string;
-    readonly filename: string;
+    readonly originalname: string;
     readonly mimetype: string;
 }

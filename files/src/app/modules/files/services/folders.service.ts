@@ -1,6 +1,7 @@
 import { Component, Inject, HttpException } from '@nestjs/common';
 import { createClient, RedisClient } from 'redis';
 import { Model } from 'mongoose';
+import { unlinkSync } from 'fs';
 import { FolderDto } from '../dto/folder.dto';
 import { File } from '../interfaces/file.interface';
 import { Folder } from '../interfaces/folder.interface';
@@ -66,10 +67,38 @@ export class FoldersService {
     async remove(user: string, id: string): Promise<Folder> {
         const folder = await this.find(user, id);
         if(!folder) throw new HttpException("Folder not found", 404);
-        // TODO: Recursive delete
-        const res = await this.folderModel.findByIdAndRemove(id).exec();
-        const event = { event: 'folderRemoved', data: folder.toDto() };
-        this.pubsub.publish('files', JSON.stringify(event));
-        return res;
+        await this.removeFolder(user, folder);
+        return folder;
+    }
+
+    private async removeFolder(user: string, folder: Folder) {
+        const folders = await this.list(user, folder.id);
+        const files = await this.fileModel.find({ owner: user, directory: folder.id });
+        for(let file of files){
+            try { 
+                unlinkSync(file.path); 
+                await file.remove();
+                this.pubsub.publish('files', JSON.stringify({ 
+                    event: 'fileRemoved', 
+                    data: file.toDto() 
+                }));
+            } catch(err) { console.log(err); }
+        }
+
+        for(let subfolder of folders){
+            try { 
+                await subfolder.remove();
+                this.pubsub.publish('files', JSON.stringify({ 
+                    event: 'fileRemoved', 
+                    data: subfolder.toDto() 
+                }));
+            } catch(err) { console.log(err); }
+        }
+
+        await folder.remove();
+        this.pubsub.publish('files', JSON.stringify({ 
+            event: 'folderRemoved', 
+            data: folder.toDto() 
+        }));
     }
 }

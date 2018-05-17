@@ -17,7 +17,8 @@ export class FilesMiddleware implements NestMiddleware {
                 return cb(null, full_path);
             },
             filename: function (req, file, cb) {
-                cb(null, file.originalname)
+                const name = Date.now().toString();
+                cb(null, name)
             }
         });
 

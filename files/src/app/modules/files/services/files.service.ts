@@ -24,8 +24,10 @@ export class FilesService {
     }
 
     async create(user: string, createFileDto: CreateFileDto, directory?: string): Promise<File> {
-        const { filename, mimetype, path } = createFileDto;
-        const file = await new this.fileModel({ owner: user, title: filename, directory, mimetype, path }).save();
+        const { originalname, mimetype, path } = createFileDto;
+        const extension = originalname.split('.').pop();
+        const title = originalname.replace('.'+extension, '');
+        const file = await new this.fileModel({ owner: user, title, extension, directory, mimetype, path }).save();
         
         const event = { event: 'fileCreated', data: file.toDto() };
         this.pubsub.publish('files', JSON.stringify(event));
@@ -50,7 +52,11 @@ export class FilesService {
     async remove(user: string, id: string): Promise<File> {
         const file = await this.get(user, id);
         if(!file) throw new HttpException("File not found", 404);
-        unlinkSync(file.path);
+        try {
+            unlinkSync(file.path);
+        } catch(err) {
+            console.log(err);
+        }
         const res = await this.fileModel.findByIdAndRemove(id).exec();
         const event = { event: 'fileRemoved', data: file.toDto() };
         this.pubsub.publish('files', JSON.stringify(event));
