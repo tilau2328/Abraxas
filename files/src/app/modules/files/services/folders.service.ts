@@ -86,13 +86,7 @@ export class FoldersService {
         }
 
         for(let subfolder of folders){
-            try { 
-                await subfolder.remove();
-                this.pubsub.publish('files', JSON.stringify({ 
-                    event: 'fileRemoved', 
-                    data: subfolder.toDto() 
-                }));
-            } catch(err) { console.log(err); }
+            await this.removeFolder(user, subfolder);
         }
 
         await folder.remove();
